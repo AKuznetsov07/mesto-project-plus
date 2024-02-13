@@ -6,6 +6,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import usersRouter from './routes/users';
+import cardsRouter from './routes/cards';
 import { Response } from 'express';
 import { authRequest } from './common/autorisedRequest';
 
@@ -23,6 +24,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb').then(() => {
   console.log(`${mongoose.connection.db.databaseName}`);
 });
 app.use('/', usersRouter);
+app.use('/', cardsRouter);
 
 
 

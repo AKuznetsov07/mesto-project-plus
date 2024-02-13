@@ -4,6 +4,7 @@ import { Response } from 'express';
 import card from '../models/card';
 import user from '../models/user';
 import { authRequest } from '../common/autorisedRequest';
+import { defaultErrorText } from '../common/constants';
 
 export const getUsers = (req: authRequest, res: Response) => {
   return user.find({})
@@ -14,8 +15,20 @@ export const getUsers = (req: authRequest, res: Response) => {
 export const getUserById = (req: authRequest, res: Response) => {
   const { id } = req.params;
   return user.findById(id)
-    .then(foundUser => res.send({ data: foundUser }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then(foundUser => {
+      if (!foundUser) {
+        const err = new Error();
+        err.name = "NoUserException"
+        return Promise.reject(err);
+      }
+
+      return res.send({ data: foundUser });
+    })
+    .catch(err => {
+      if (err.name === 'NoUserException') return res.status(404).send('Пользователь по указанному _id не найден.')
+
+      return res.status(500).send({ message: defaultErrorText })
+    });
 };
 
 export const createUser = (req: authRequest, res: Response) => {
@@ -23,7 +36,11 @@ export const createUser = (req: authRequest, res: Response) => {
 
   return user.create({ name, about, avatar })
     .then((createdUser) => res.send({ data: createdUser }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(err => {
+      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при создании пользователя.') 
+
+      return res.status(500).send({ message: defaultErrorText })
+    });
 };
 
 export const updateUserBioById = (req: authRequest, res: Response) => {
@@ -36,8 +53,20 @@ export const updateUserBioById = (req: authRequest, res: Response) => {
       runValidators: true, // данные будут валидированы перед изменением
       //upsert: true // если пользователь не найден, он будет создан
     })
-    .then(foundUser => res.send({ data: foundUser }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then(foundUser => {
+      if (!foundUser) {
+        const err = new Error();
+        err.name = "NoUserException"
+        return Promise.reject(err);
+      }
+      return res.send({ data: foundUser })
+    })
+    .catch(err => {
+      if (err.name === 'NoUserException') return res.status(404).send('Пользователь с указанным _id не найден.')
+      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при обновлении профиля.') 
+
+      return res.status(500).send({ message: defaultErrorText })
+    });
 };
 
 export const updateUserAvatarById = (req: authRequest, res: Response) => {
@@ -49,6 +78,18 @@ export const updateUserAvatarById = (req: authRequest, res: Response) => {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
     })
-    .then(foundUser => res.send({ data: foundUser }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then(foundUser => {
+      if (!foundUser) {
+        const err = new Error();
+        err.name = "NoUserException"
+        return Promise.reject(err);
+      }
+      return res.send({ data: foundUser })
+    })
+    .catch(err => {
+      if (err.name === 'NoUserException') return res.status(404).send('Пользователь с указанным _id не найден.')
+      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при обновлении профиля.')
+
+      return res.status(500).send({ message: defaultErrorText })
+    });
 };

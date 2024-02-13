@@ -4,11 +4,16 @@ import { Response } from 'express';
 import card from '../models/card';
 import user from '../models/user';
 import { authRequest } from '../common/autorisedRequest';
+import { defaultErrorText } from '../common/constants';
 
 export const getCards = (req: authRequest, res: Response) => {
   return card.find({})
     .then((foundCards: any) => res.send({ data: foundCards }))
-    .catch((err: { message: any; }) => res.status(500).send({ message: err.message }));
+    .catch((err: { message: any; }) => {
+
+
+      return res.status(500).send({ message: err.message })
+    });
 };
 
 
@@ -17,14 +22,14 @@ export const createCard = (req: authRequest, res: Response) => {
 
   return card.create({ name, link })
     .then((createdCard) => res.send({ data: createdCard }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: defaultErrorText }));
 };
 
 export const deleteCardById = (req: authRequest, res: Response) => {
   const { id } = req.params;
   return card.findByIdAndDelete(id)
     .then(foundCard => res.send({ data: foundCard }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(err => res.status(500).send({ message: defaultErrorText }));
 };
 
 export const likeCard = (req: authRequest, res: Response) => {
@@ -35,7 +40,7 @@ export const likeCard = (req: authRequest, res: Response) => {
       { new: true },
     )
     .then(foundCard => res.send({ data: foundCard }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(err => res.status(500).send({ message: defaultErrorText }));
 };
 
 export const dislikeCard = (req: authRequest, res: Response) => {
@@ -46,5 +51,5 @@ export const dislikeCard = (req: authRequest, res: Response) => {
       { new: true },
     )
     .then(foundCard => res.send({ data: foundCard }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(err => res.status(500).send({ message: defaultErrorText }));
 };
