@@ -3,7 +3,7 @@ import { getCards, createCard, deleteCardById, likeCard, dislikeCard } from '../
 
 const router = Router();
 
-router.get('/cards', getCards);
+router.get('/cards', getCards);//+
 router.post('/cards', createCard);
 router.delete('/cards/:userId', deleteCardById);
 router.put('/cards/:cardId/likes', likeCard);
