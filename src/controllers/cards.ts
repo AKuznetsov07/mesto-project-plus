@@ -48,11 +48,9 @@ export const deleteCardById = (req: authRequest, res: Response) => {
 
 export const likeCard = (req: authRequest, res: Response) => {
   const userId = req.user?._id;
-  console.log(req.params);
-  console.log("_____");
   return card.findByIdAndUpdate(
       req.params.cardId,
-    { $addToSet: { likes: userId } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: userId } },
       { new: true },
   )
     .then(foundCard => {
@@ -65,7 +63,7 @@ export const likeCard = (req: authRequest, res: Response) => {
       return res.send({ data: foundCard });
     })
     .catch(err => {
-      console.log(err);
+      if (err.name === 'CastError') return res.status(400).send('Переданы некорректные данные для постановки/снятии лайка.')
       if (err.name === 'NoCardException') return res.status(404).send('Карточка с указанным _id не найдена.')
 
       return res.status(500).send({ message: defaultErrorText })
@@ -77,7 +75,7 @@ export const dislikeCard = (req: authRequest, res: Response) => {
   const userId = req.user?._id;
   return card.findByIdAndUpdate(
       req.params.cardId,
-    { $pull: { likes: userId } }, // убрать _id из массива
+    { $pull: { likes: userId } },
       { new: true },
   )
     .then(foundCard => {
@@ -90,8 +88,9 @@ export const dislikeCard = (req: authRequest, res: Response) => {
       return res.send({ data: foundCard });
     })
     .catch(err => {
-      if (err.name === 'NoCardException') return res.status(404).send('Карточка с указанным _id не найдена.')
-
+      if (err.name === 'CastError') return res.status(400).send('Переданы некорректные данные для постановки/снятии лайка.')
+      if (err.name === 'NoCardException') return res.status(404).send('Передан несуществующий _id карточки.')
+      console.log(err)
       return res.status(500).send({ message: defaultErrorText })
     });
 };
