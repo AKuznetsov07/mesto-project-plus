@@ -6,6 +6,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import usersRouter from './routes/users';
+import { Response } from 'express';
+import { authRequest } from './common/autorisedRequest';
+
+
 
 const port = process.env.port || 3000;
 
@@ -22,7 +26,7 @@ app.use('/', usersRouter);
 
 
 
-app.use((req: any, res: any, next) => {
+app.use((req: authRequest, res: Response, next) => {
   req.user = {
     _id: '65c93a5634acbaa8d628462d' // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
