@@ -23,10 +23,6 @@ app.use(express.urlencoded({ extended: true })); // для приёма веб-�
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb').then(() => {
   console.log(`${mongoose.connection.db.databaseName}`);
 });
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
-
-
 
 app.use((req: authRequest, res: Response, next) => {
   req.user = {
@@ -34,7 +30,13 @@ app.use((req: authRequest, res: Response, next) => {
   };
 
   next();
-}); 
+});
+
+app.use('/', usersRouter);
+app.use('/', cardsRouter);
+
+
+
 
 
 app.listen(port, () => {
