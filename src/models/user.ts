@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 interface IUser {
   name: string;
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   avatar: {
     type: String,
-    required: true
+    required: true,
   },
   about: {
     type: String,
