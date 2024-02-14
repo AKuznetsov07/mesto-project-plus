@@ -4,13 +4,13 @@ import { Response } from 'express';
 import card from '../models/card';
 import user from '../models/user';
 import { authRequest } from '../common/autorisedRequest';
-import { defaultErrorText } from '../common/constants';
+import { defaultErrorText, IncorrectDataErrorCode, NotFoundErrorCode, UnhandledErrorCode } from '../common/constants';
 
 export const getCards = (req: authRequest, res: Response) => {
   return card.find({})
     .then((foundCards: any) => res.send({ data: foundCards }))
     .catch((err: { message: any; }) => {
-      return res.status(500).send({ message: err.message })
+      return res.status(UnhandledErrorCode).send({ message: err.message })
     });
 };
 
@@ -21,9 +21,9 @@ export const createCard = (req: authRequest, res: Response) => {
   return card.create({ name, link, owner })
     .then((createdCard) => res.send({ data: createdCard }))
     .catch(err => {
-      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при создании карточки.')
+      if (err.name === 'ValidationError') return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при создании карточки.')
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
 
@@ -40,9 +40,9 @@ export const deleteCardById = (req: authRequest, res: Response) => {
       return res.send({ data: foundCard });
     })
     .catch(err => {
-      if (err.name === 'NoCardException') return res.status(404).send('Карточка с указанным _id не найдена.')
+      if (err.name === 'NoCardException') return res.status(NotFoundErrorCode).send('Карточка с указанным _id не найдена.')
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
 
@@ -63,10 +63,10 @@ export const likeCard = (req: authRequest, res: Response) => {
       return res.send({ data: foundCard });
     })
     .catch(err => {
-      if (err.name === 'CastError') return res.status(400).send('Переданы некорректные данные для постановки/снятии лайка.')
-      if (err.name === 'NoCardException') return res.status(404).send('Карточка с указанным _id не найдена.')
+      if (err.name === 'CastError') return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные для постановки/снятии лайка.')
+      if (err.name === 'NoCardException') return res.status(NotFoundErrorCode).send('Карточка с указанным _id не найдена.')
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
 
@@ -88,9 +88,9 @@ export const dislikeCard = (req: authRequest, res: Response) => {
       return res.send({ data: foundCard });
     })
     .catch(err => {
-      if (err.name === 'CastError') return res.status(400).send('Переданы некорректные данные для постановки/снятии лайка.')
-      if (err.name === 'NoCardException') return res.status(404).send('Передан несуществующий _id карточки.')
+      if (err.name === 'CastError') return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные для постановки/снятии лайка.')
+      if (err.name === 'NoCardException') return res.status(NotFoundErrorCode).send('Передан несуществующий _id карточки.')
       console.log(err)
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };

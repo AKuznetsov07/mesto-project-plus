@@ -4,12 +4,12 @@ import { Response } from 'express';
 import card from '../models/card';
 import user from '../models/user';
 import { authRequest } from '../common/autorisedRequest';
-import { defaultErrorText } from '../common/constants';
+import { defaultErrorText, IncorrectDataErrorCode, NotFoundErrorCode, UnhandledErrorCode } from '../common/constants';
 
 export const getUsers = (req: authRequest, res: Response) => {
   return user.find({})
     .then((foundUsers: any) => res.send({ data: foundUsers }))
-    .catch((err: { message: any; }) => res.status(500).send({ message: err.message }));
+    .catch((err: { message: any; }) => res.status(UnhandledErrorCode).send({ message: err.message }));
 };
 
 export const getUserById = (req: authRequest, res: Response) => {
@@ -25,9 +25,9 @@ export const getUserById = (req: authRequest, res: Response) => {
       return res.send({ data: foundUser });
     })
     .catch(err => {
-      if (err.name === 'NoUserException') return res.status(404).send('Пользователь по указанному _id не найден.')
+      if (err.name === 'NoUserException') return res.status(NotFoundErrorCode).send('Пользователь по указанному _id не найден.')
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
 
@@ -37,9 +37,9 @@ export const createUser = (req: authRequest, res: Response) => {
   return user.create({ name, about, avatar })
     .then((createdUser) => res.send({ data: createdUser }))
     .catch(err => {
-      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при создании пользователя.') 
+      if (err.name === 'ValidationError') return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при создании пользователя.') 
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
 
@@ -62,10 +62,10 @@ export const updateUserBioById = (req: authRequest, res: Response) => {
       return res.send({ data: foundUser })
     })
     .catch(err => {
-      if (err.name === 'NoUserException') return res.status(404).send('Пользователь с указанным _id не найден.')
-      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при обновлении профиля.') 
+      if (err.name === 'NoUserException') return res.status(NotFoundErrorCode).send('Пользователь с указанным _id не найден.')
+      if (err.name === 'ValidationError') return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при обновлении профиля.') 
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
 
@@ -87,9 +87,9 @@ export const updateUserAvatarById = (req: authRequest, res: Response) => {
       return res.send({ data: foundUser })
     })
     .catch(err => {
-      if (err.name === 'NoUserException') return res.status(404).send('Пользователь с указанным _id не найден.')
-      if (err.name === 'ValidationError') return res.status(400).send('Переданы некорректные данные при обновлении профиля.')
+      if (err.name === 'NoUserException') return res.status(NotFoundErrorCode).send('Пользователь с указанным _id не найден.')
+      if (err.name === 'ValidationError') return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при обновлении профиля.')
 
-      return res.status(500).send({ message: defaultErrorText })
+      return res.status(UnhandledErrorCode).send({ message: defaultErrorText })
     });
 };
