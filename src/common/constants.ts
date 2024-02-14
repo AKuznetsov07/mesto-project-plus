@@ -1,0 +1,1 @@
+export const defaultErrorText = 'Произошла ошибка';
