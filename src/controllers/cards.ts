@@ -29,14 +29,14 @@ export const createCard = (req: authRequest, res: Response, next: NextFunction) 
 export const deleteCardById = (req: authRequest, res: Response, next: NextFunction) => {
   const { cardId } = req.params;
   const userId = req.user?._id;
-  return card.findByIdAndDelete(cardId)
+  return card.findById(cardId)
     .orFail(new Error('NoCardException'))
     .then((foundCard) => {
       if (userId !== foundCard.owner.toString()) {
         return Promise.reject(new Error('RightsException'));
       }
 
-      return res.send({ data: foundCard });
+      return card.findByIdAndDelete(cardId).then((deletedCard) => res.send({ data: deletedCard }));
     })
     .catch((err) => {
       if (err.message === 'RightsException') return next(new ForbiddenException('Карточка с указанным _id не найдена.'));

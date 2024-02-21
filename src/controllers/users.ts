@@ -16,6 +16,8 @@ import {
 } from '../common/constants';
 import NotFoundException from '../common/exceptions/NotFoundException';
 import IncorrectDataException from '../common/exceptions/IncorrectDataException';
+import UnauthException from '../common/exceptions/UnauthException';
+import DBException from '../common/exceptions/DBException';
 
 export const getUsers = (req: authRequest, res: Response, next: NextFunction) => user.find({})
   .then((foundUsers: any) => res.send({ data: foundUsers })).catch(next);
@@ -41,8 +43,15 @@ export const createUser = (req: authRequest, res: Response, next: NextFunction) 
     email } = req.body;
   return bcrypt.hash(password, 1).then((hashedPassword) => user
     .create({ name, about, avatar, password: hashedPassword, email })
-    .then((createdUser) => res.status(SuccesOnCreationCode).send({ data: createdUser }))
-    .catch((err: Error) => {
+    .then((createdUser) => res.status(SuccesOnCreationCode).send({ data: {
+      name: createdUser.name,
+      about: createdUser.about,
+      avatar: createdUser.avatar,
+      email: createdUser.email,
+    },
+    }))
+    .catch((err) => {
+      if (err?.code === 11000) return next(new DBException('Пользователь с указанной почтой уже зарегестрирован.', 409));
       if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при создании пользователя.'));
 
       return next(err);
@@ -98,5 +107,5 @@ export const login = (req: authRequest, res: Response, next: NextFunction) => {
       res.send({
         token: jwt.sign({ _id: foundUser._id }, 'super-strong-secret', { expiresIn: '7d' }),
       });
-    }).catch(next);
+    }).catch(() => next(new UnauthException('Неправильные почта или пароль')));
 };

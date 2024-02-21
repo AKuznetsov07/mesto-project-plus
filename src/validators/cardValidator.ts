@@ -1,7 +1,7 @@
 import { Joi, celebrate } from 'celebrate';
 
 const simpleCardOperation = {
-  cardId: Joi.string().required(),
+  cardId: Joi.string().required().max(24),
 };
 
 export const createCardValidator = celebrate({
