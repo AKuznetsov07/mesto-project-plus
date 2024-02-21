@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import UnauthException from '../common/exceptions/UnauthException';

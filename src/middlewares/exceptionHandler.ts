@@ -8,7 +8,8 @@ const exceptionHandler = (
   next: NextFunction,
 ) => {
   const { statusCode = 500, message } = err;
-
+  console.log(statusCode);
+  console.log(message);
   res
     .status(statusCode)
     .send({

@@ -22,16 +22,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// подключаемся к серверу MongoiDB
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb').then(() => console.log(`${mongoose.connection.db.databaseName}`));
-app.use(requestLogger); // подключаем логер запросов
+app.use(requestLogger);
 app.use('/', signRouter);
-app.use('*', (req: authRequest, res: Response) => res.status(NotFoundErrorCode).send('Карточка с указанным _id не найдена.'));
 app.use(auth);
 app.use('/', usersRouter);
 app.use('/', cardsRouter);
+app.use('*', (req: authRequest, res: Response) => res.status(NotFoundErrorCode).send('Неизвестная страница.'));
 
-app.use(errorLogger); // подключаем логер ошибок
+app.use(errorLogger);
 app.use(errors());
 
 app.use(exceptionHandler);

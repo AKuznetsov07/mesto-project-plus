@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable object-curly-newline */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import jwt from 'jsonwebtoken';
@@ -24,19 +26,24 @@ export const getUserById = (req: authRequest, res: Response, next: NextFunction)
     .orFail(new Error('NoUserException'))
     .then((foundUser) => res.send({ data: foundUser }))
     .catch((err) => {
-      if (err.message === 'NoUserException') return next(new NotFoundException('Пользователь по указанному _id не найден.'));// res.status(NotFoundErrorCode).send('Пользователь по указанному _id не найден.');
+      if (err.message === 'NoUserException') return next(new NotFoundException('Пользователь по указанному _id не найден.'));
 
       return next(err);
     });
 };
 
 export const createUser = (req: authRequest, res: Response, next: NextFunction) => {
-  const { name, about, avatar, password, email } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    password,
+    email } = req.body;
   return bcrypt.hash(password, 1).then((hashedPassword) => user
     .create({ name, about, avatar, password: hashedPassword, email })
     .then((createdUser) => res.status(SuccesOnCreationCode).send({ data: createdUser }))
     .catch((err: Error) => {
-      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при создании пользователя.'));// return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при создании пользователя.');
+      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при создании пользователя.'));
 
       return next(err);
     }));
@@ -56,8 +63,8 @@ export const updateUserBioById = (req: authRequest, res: Response, next: NextFun
     .orFail(new Error('NoUserException'))
     .then((foundUser) => res.send({ data: foundUser }))
     .catch((err) => {
-      if (err.message === 'NoUserException') return next(new NotFoundException('Пользователь с указанным _id не найден.'));// return res.status(NotFoundErrorCode).send('Пользователь с указанным _id не найден.');
-      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при обновлении профиля.'));// return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при обновлении профиля.');
+      if (err.message === 'NoUserException') return next(new NotFoundException('Пользователь с указанным _id не найден.'));
+      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при обновлении профиля.'));
 
       return next(err);
     });
@@ -77,8 +84,8 @@ export const updateUserAvatarById = (req: authRequest, res: Response, next: Next
     .orFail(new Error('NoUserException'))
     .then((foundUser) => res.send({ data: foundUser }))
     .catch((err) => {
-      if (err.message === 'NoUserException') return next(new NotFoundException('Пользователь с указанным _id не найден.'));// return res.status(NotFoundErrorCode).send('Пользователь с указанным _id не найден.');
-      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при обновлении профиля.'));// return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при обновлении профиля.');
+      if (err.message === 'NoUserException') return next(new NotFoundException('Пользователь с указанным _id не найден.'));
+      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при обновлении профиля.'));
 
       return next(err);
     });

@@ -4,12 +4,7 @@ import { Response, NextFunction } from 'express';
 import card from '../models/card';
 import { authRequest } from '../common/autorisedRequest';
 import {
-  // defaultErrorText,
-  // IncorrectDataErrorCode,
-  // NotFoundErrorCode,
-  // UnhandledErrorCode,
   SuccesOnCreationCode,
-  // ForbiddenExceptionCode,
 } from '../common/constants';
 import IncorrectDataException from '../common/exceptions/IncorrectDataException';
 import ForbiddenException from '../common/exceptions/ForbiddenException';
@@ -25,7 +20,7 @@ export const createCard = (req: authRequest, res: Response, next: NextFunction) 
   return card.create({ name, link, owner })
     .then((createdCard) => res.status(SuccesOnCreationCode).send({ data: createdCard }))
     .catch((err) => {
-      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при создании карточки.'));// res.status(IncorrectDataErrorCode).send('Переданы некорректные данные при создании карточки.');
+      if (err.name === 'ValidationError') return next(new IncorrectDataException('Переданы некорректные данные при создании карточки.'));
 
       return next(err);
     });
@@ -44,8 +39,8 @@ export const deleteCardById = (req: authRequest, res: Response, next: NextFuncti
       return res.send({ data: foundCard });
     })
     .catch((err) => {
-      if (err.message === 'RightsException') return next(new ForbiddenException('Карточка с указанным _id не найдена.'));// res.status(ForbiddenExceptionCode).send('Карточка с указанным _id не найдена.');
-      if (err.message === 'NoCardException') return next(new NotFoundException('Карточка с указанным _id не найдена.'));// res.status(NotFoundErrorCode).send('Карточка с указанным _id не найдена.');
+      if (err.message === 'RightsException') return next(new ForbiddenException('Карточка с указанным _id не найдена.'));
+      if (err.message === 'NoCardException') return next(new NotFoundException('Карточка с указанным _id не найдена.'));
 
       return next(err);
     });
@@ -57,8 +52,8 @@ export const likeCard = (req: authRequest, res: Response, next: NextFunction) =>
     .orFail(new Error('NoCardException'))
     .then((foundCard) => res.send({ data: foundCard }))
     .catch((err) => {
-      if (err.message === 'NoCardException') return next(new NotFoundException('Карточка с указанным _id не найдена.'));//  return res.status(NotFoundErrorCode).send('Карточка с указанным _id не найдена.');
-      if (err.name === 'CastError') return next(new IncorrectDataException('Переданы некорректные данные для постановки/снятии лайка.'));//  return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные для постановки/снятии лайка.');
+      if (err.message === 'NoCardException') return next(new NotFoundException('Карточка с указанным _id не найдена.'));
+      if (err.name === 'CastError') return next(new IncorrectDataException('Переданы некорректные данные для постановки/снятии лайка.'));
 
       return next(err);
     });
@@ -74,10 +69,9 @@ export const dislikeCard = (req: authRequest, res: Response, next: NextFunction)
     .orFail(new Error('NoCardException'))
     .then((foundCard) => res.send({ data: foundCard }))
     .catch((err) => {
-      if (err.message === 'NoCardException') return next(new ForbiddenException('Карточка с указанным _id не найдена.'));// return res.status(NotFoundErrorCode).send('Карточка с указанным _id не найдена.');
-      if (err.name === 'CastError') return next(new IncorrectDataException('Переданы некорректные данные для постановки/снятии лайка.'));// return res.status(IncorrectDataErrorCode).send('Переданы некорректные данные для постановки/снятии лайка.');
+      if (err.message === 'NoCardException') return next(new ForbiddenException('Карточка с указанным _id не найдена.'));
+      if (err.name === 'CastError') return next(new IncorrectDataException('Переданы некорректные данные для постановки/снятии лайка.'));
 
       return next(err);
-      // return res.status(UnhandledErrorCode).send({ message: defaultErrorText });
     });
 };
