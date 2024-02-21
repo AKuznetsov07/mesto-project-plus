@@ -9,9 +9,9 @@ interface ICard {
 }
 
 const cardSchema = new mongoose.Schema<ICard>({
-  name: { // у пользователя есть имя — опишем требования к имени в схеме:
-    type: String, // имя — это строка
-    required: true, // имя — обязательное поле
+  name: {
+    type: String,
+    required: true,
     minlength: 2,
     maxlength: 30,
   },
@@ -25,7 +25,7 @@ const cardSchema = new mongoose.Schema<ICard>({
   },
   likes: {
     type: [mongoose.Types.ObjectId],
-    default:[],
+    default: [],
   },
   createdAt: {
     type: Date,
