@@ -3,7 +3,7 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable eol-last */
-import express, { Response } from 'express';
+import express, { NextFunction, Response } from 'express';
 import mongoose from 'mongoose';
 import { errors } from 'celebrate';
 import auth from './middlewares/auth';
@@ -12,8 +12,8 @@ import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 import signRouter from './routes/sign';
 import { authRequest } from './common/autorisedRequest';
-import { NotFoundErrorCode } from './common/constants';
 import exceptionHandler from './middlewares/exceptionHandler';
+import NotFoundException from './common/exceptions/NotFoundException';
 
 const port = process.env.port || 3000;
 
@@ -28,17 +28,12 @@ app.use('/', signRouter);
 app.use(auth);
 app.use('/', usersRouter);
 app.use('/', cardsRouter);
-app.use('*', (req: authRequest, res: Response) => res.status(NotFoundErrorCode).send('Неизвестная страница.'));
+app.use('*', (req: authRequest, res: Response, next: NextFunction) => {
+  next(new NotFoundException('Маршрут не найден'));
+});
 
 app.use(errorLogger);
 app.use(errors());
 
 app.use(exceptionHandler);
 app.listen(port, () => console.log(`Started at: ${port}`));
-
-// За повторное отправление по сути той же работы простите.
-// Я когда в первый раз отправил на проверку, отменил,
-// чтобы ещё раз перепроверить, потом отправил "вроде нормально",
-// но оказалось первая отмена не сработала и у меня уже есть ревью на разбор.
-// Я захотел отменить вторую отправку на проверку,
-// но обнаружил, что отменить не выходит. Так что по сути одно и тоже наотправлял.
